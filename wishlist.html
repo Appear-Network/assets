@@ -1,0 +1,817 @@
+<!--
+  wishlist.html
+  v1.5 - Money → 💎; Body → 🌿; Resources presets updated; removed all "or" from chips
+  v1.4 - Money emoji → 🥯; added Body category (✂️) with hair, nails, massage
+         updated icons (🪙❤️‍🩹💛💡); updated presets; label/copy changes;
+         removed custom form box; removed cat hint; right-justified add button
+  v1.1 - Multi-select category chips; all presets shown at once
+  v1.0 - Initial build
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Appreciation list - Appear Network</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:           #1F699E;
+      --card:         #FFFFFF;
+      --text:         #1A2E42;
+      --soft:         #4A6080;
+      --muted:        #6A8FAF;
+      --brand:        #1F699E;
+      --border:       #DDE4EE;
+      --input-bg:     #F7F9FC;
+      --hover:        #185885;
+      --green:        #E8F5E9;
+      --green-border: #A5D6A7;
+      --green-text:   #2E7D32;
+      --ph-color:     #B8CCDE;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      padding: 40px 20px 60px;
+      color: var(--text);
+    }
+
+    .card {
+      background: var(--card);
+      max-width: 660px;
+      margin: 0 auto;
+      border-radius: 16px;
+      padding: 52px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.25), 0 4px 16px rgba(0,0,0,0.12);
+    }
+
+    @media (max-width: 520px) { .card { padding: 32px 20px; } }
+
+    /* ── Type ── */
+    .eyebrow {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--brand);
+      margin-bottom: 8px;
+    }
+
+    h1 { font-size: 26px; font-weight: 700; color: var(--text); line-height: 1.3; margin-bottom: 8px; }
+    h2 { font-size: 20px; font-weight: 700; color: var(--text); line-height: 1.3; margin-bottom: 6px; }
+
+    .subtitle { font-size: 15px; color: var(--soft); font-weight: 300; line-height: 1.7; margin-bottom: 32px; }
+
+    hr { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+
+    label { display: block; font-size: 14px; color: var(--muted); margin-bottom: 6px; }
+
+    input[type="text"] {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus { border-color: var(--brand); }
+    input[type="text"]::placeholder { color: var(--ph-color); }
+
+    .field { margin-bottom: 20px; }
+
+    /* ── Category tabs ── */
+    .cat-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+
+    .cat-tab {
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      background: var(--input-bg);
+      font-size: 13px;
+      color: var(--soft);
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.18s;
+      user-select: none;
+    }
+
+    .cat-tab:hover { border-color: var(--brand); color: var(--brand); }
+    .cat-tab.active { background: var(--brand); border-color: var(--brand); color: white; }
+
+    /* ── Preset groups ── */
+    .preset-groups { margin-bottom: 24px; }
+    .preset-group { margin-bottom: 20px; }
+
+    .preset-group-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .preset-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .preset-chip {
+      padding: 7px 14px;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      background: var(--input-bg);
+      font-size: 13px;
+      color: var(--soft);
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.18s;
+    }
+
+    .preset-chip:hover { border-color: var(--brand); color: var(--brand); }
+    .preset-chip.used { background: #E8F0F8; border-color: var(--brand); color: var(--brand); font-weight: 500; }
+    .preset-chip.other-chip { border-style: dashed; }
+    .preset-chip.other-chip.open { background: var(--brand); border-color: var(--brand); color: white; border-style: solid; }
+
+    /* ── Inline Other form ── */
+    .inline-other-wrap {
+      flex: 0 0 100%;
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      align-items: center;
+    }
+
+    .inline-other-wrap input[type="text"] {
+      flex: 1;
+      padding: 9px 12px;
+      font-size: 13px;
+      background: white;
+    }
+
+    .inline-other-wrap input[type="text"]::placeholder { color: var(--ph-color); }
+
+    .btn-inline-add {
+      padding: 9px 16px;
+      border-radius: 8px;
+      background: var(--brand);
+      color: white;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+
+    .btn-inline-add:hover { background: var(--hover); }
+
+    /* ── Top-level Other form ── */
+    .top-other-form {
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+    }
+
+    .top-other-form input[type="text"] {
+      background: white;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .top-other-form input[type="text"]::placeholder { color: var(--ph-color); }
+
+    .top-other-actions { display: flex; justify-content: flex-end; }
+
+    .btn-top-add {
+      padding: 9px 18px;
+      border-radius: 8px;
+      background: var(--brand);
+      color: white;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-top-add:hover { background: var(--hover); }
+
+    /* ── Wish items ── */
+    .wish-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin-bottom: 10px;
+      background: var(--card);
+      transition: all 0.2s;
+    }
+
+    .wish-item.done { background: var(--green); border-color: var(--green-border); opacity: 0.85; }
+
+    .wish-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+    .wish-body { flex: 1; min-width: 0; }
+    .wish-cat { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
+    .wish-title { font-size: 15px; font-weight: 500; color: var(--text); }
+    .wish-item.done .wish-title { text-decoration: line-through; color: var(--soft); }
+    .wish-note { font-size: 13px; color: var(--soft); font-weight: 300; margin-top: 2px; }
+    .wish-badge { font-size: 11px; font-weight: 500; color: var(--green-text); margin-top: 4px; }
+
+    .wish-actions { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
+
+    .btn-sm {
+      padding: 5px 13px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: white;
+      font-size: 12px;
+      color: var(--soft);
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.18s;
+      white-space: nowrap;
+    }
+
+    .btn-sm.receive:hover { background: var(--green); border-color: var(--green-border); color: var(--green-text); }
+    .btn-sm.undo { color: #aaa; }
+    .btn-sm.remove:hover { background: #FFEBEE; border-color: #EF9A9A; color: #C62828; }
+
+    /* ── Progress ── */
+    .progress-wrap { margin-bottom: 20px; }
+    .progress-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    .progress-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--brand); border-radius: 2px; transition: width 0.4s ease; }
+
+    /* ── Buttons ── */
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      background: var(--brand);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-primary:hover { background: var(--hover); }
+
+    .btn-secondary {
+      width: 100%;
+      padding: 13px;
+      background: white;
+      color: var(--brand);
+      border: 1.5px solid var(--brand);
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover { background: var(--input-bg); }
+
+    .btn-outline {
+      width: 100%;
+      padding: 13px;
+      background: white;
+      color: var(--brand);
+      border: 1.5px solid var(--brand);
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: block;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .btn-outline:hover { background: var(--input-bg); }
+
+    /* ── Review screen ── */
+    .review-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 24px;
+    }
+
+    .btn-edit {
+      padding: 7px 16px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      background: white;
+      font-size: 13px;
+      color: var(--soft);
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.18s;
+      white-space: nowrap;
+      margin-left: 16px;
+      flex-shrink: 0;
+    }
+
+    .btn-edit:hover { border-color: var(--brand); color: var(--brand); }
+
+    .review-group { margin-bottom: 20px; }
+
+    .review-group-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .review-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .review-chip {
+      padding: 7px 14px;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      background: var(--input-bg);
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .review-count { font-size: 14px; color: var(--soft); margin-bottom: 24px; font-weight: 300; }
+
+    /* ── Share box ── */
+    .share-box {
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 20px;
+      display: none;
+    }
+
+    .share-box p { font-size: 14px; color: var(--soft); margin-bottom: 10px; }
+
+    .share-url {
+      font-size: 12px;
+      color: var(--muted);
+      word-break: break-all;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    /* ── Empty ── */
+    .empty { text-align: center; padding: 32px; color: var(--muted); font-size: 14px; font-style: italic; }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(16px);
+      background: var(--text);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.28s;
+      z-index: 999;
+    }
+
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    .page-footer {
+      text-align: center;
+      margin-top: 28px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.55);
+    }
+
+    .page-footer a { color: rgba(255,255,255,0.75); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<div class="card" id="app"></div>
+<div class="toast" id="toast"></div>
+
+<div class="page-footer">
+  <a href="https://appear.network">Appear Network</a> &nbsp;·&nbsp; part of the <a href="https://circulate.network">CIRCULATE</a> ecosystem
+</div>
+
+<script>
+// ─── Categories ────────────────────────────────────────────────────────────
+const CATS = [
+  { id:'stuff',       icon:'📦', label:'Stuff',        presets:['Household supplies','Gear and tools','Art supplies'] },
+  { id:'food',        icon:'🍵', label:'Food & drink',  presets:['Coffee','A homemade meal','Local ingredients'] },
+  { id:'skills',      icon:'🛠',  label:'Skills',        presets:['Proofread my resume','Help with my website','Teach me a workflow'] },
+  { id:'time',        icon:'⏳', label:'Time',           presets:['Help me move','Join a brainstorm session','Be a thought partner for an hour'] },
+  { id:'space',       icon:'🏡', label:'Space',          presets:['Use of your workspace','Host a meeting at your place','Lend me a quiet room for a day'] },
+  { id:'connections', icon:'🔗', label:'Connections',    presets:['Connect me with a collaborator','Introduce me to a community','Refer me to a potential client'] },
+  { id:'words',       icon:'📋', label:'Words',          presets:['Write me a testimonial','Leave a review for my work','Share my work with your network'] },
+  { id:'care',        icon:'❤️‍🩹', label:'Care',          presets:['Check in on me this week','Send encouragement before something big','Be my accountability partner'] },
+  { id:'presence',    icon:'💛', label:'Presence',       presets:['Attend my event','Show up for something I made','Be in the room when it matters'] },
+  { id:'feedback',    icon:'🔍', label:'Feedback',       presets:['Review my proposal','Give honest notes on my portfolio','Beta test my prototype'] },
+  { id:'experiences', icon:'✨', label:'Experiences',    presets:['Co-work together for a day','Take a walk and think out loud','Share a meal with no agenda'] },
+  { id:'resources',   icon:'🔑', label:'Resources',      presets:['A software subscription','A workspace for the day','A professional membership'] },
+  { id:'money',       icon:'💎', label:'Money',          presets:['A one-time donation','Recurring monthly contribution','Buy Me a Coffee','Ko-fi','Venmo','PayPal','Gift card'] },
+  { id:'ideas',       icon:'💡', label:'Ideas',          presets:['Suggest a book','Share what\'s working for you right now','Introduce me to a new way of thinking'] },
+  { id:'body',        icon:'🌿', label:'Body',           presets:['A haircut','A nail appointment','A massage'] },
+  { id:'other',       icon:'✏️', label:'Other',          presets:[] }  // open text only
+];
+
+// ─── State ─────────────────────────────────────────────────────────────────
+let mode             = 'builder';   // 'builder' | 'review' | 'viewer'
+let viewerData       = null;
+let viewFulfilled    = new Set();
+let selectedCats     = new Set();
+let inlineOtherOpen  = new Set();   // catIds with inline Other form open
+let inlineOtherText  = {};          // { catId: string }
+let topOtherText     = '';          // text for top-level Other category
+let items            = [];
+let myName           = '';
+let shareShown       = false;
+
+// ─── Boot ──────────────────────────────────────────────────────────────────
+(function init() {
+  const params  = new URLSearchParams(window.location.search);
+  const encoded = params.get('list');
+  if (encoded) {
+    try {
+      viewerData = JSON.parse(atob(encoded));
+      mode = 'viewer';
+      try { viewFulfilled = new Set(JSON.parse(localStorage.getItem('vf_' + encoded.slice(0,24)) || '[]')); } catch(_) {}
+    } catch(_) { mode = 'builder'; }
+  } else {
+    try {
+      const s = JSON.parse(localStorage.getItem('an_wishlist') || '{}');
+      items  = s.items || [];
+      myName = s.name  || '';
+    } catch(_) {}
+  }
+  render();
+})();
+
+// ─── Persist ───────────────────────────────────────────────────────────────
+function save() {
+  localStorage.setItem('an_wishlist', JSON.stringify({ name: myName, items }));
+}
+
+function saveViewer() {
+  const encoded = new URLSearchParams(window.location.search).get('list');
+  localStorage.setItem('vf_' + encoded.slice(0,24), JSON.stringify([...viewFulfilled]));
+}
+
+// ─── Actions ───────────────────────────────────────────────────────────────
+function toggleCat(id) {
+  selectedCats.has(id) ? selectedCats.delete(id) : selectedCats.add(id);
+  // Clear inline Other state for deselected categories
+  if (!selectedCats.has(id)) {
+    inlineOtherOpen.delete(id);
+    delete inlineOtherText[id];
+  }
+  render();
+}
+
+function addPreset(text, catId) {
+  if (items.some(i => i.title === text)) { toast('Already on your list'); return; }
+  const cat = CATS.find(c => c.id === catId);
+  items.push({ id: uid(), catId: cat.id, catLabel: cat.label, catIcon: cat.icon, title: text, note: '', done: false });
+  save(); shareShown = false; render(); toast('Added');
+}
+
+// Inline Other (within a category)
+function toggleInlineOther(catId) {
+  if (inlineOtherOpen.has(catId)) {
+    inlineOtherOpen.delete(catId);
+    delete inlineOtherText[catId];
+  } else {
+    inlineOtherOpen.add(catId);
+    inlineOtherText[catId] = '';
+  }
+  render();
+  // Focus the new input
+  if (inlineOtherOpen.has(catId)) {
+    const el = document.getElementById('inline-other-' + catId);
+    if (el) el.focus();
+  }
+}
+
+function updateInlineOther(catId, val) {
+  inlineOtherText[catId] = val;
+}
+
+function addInlineOther(catId) {
+  const text = (inlineOtherText[catId] || '').trim();
+  if (!text) { toast('Name it first'); return; }
+  if (items.some(i => i.title === text)) { toast('Already on your list'); return; }
+  const cat = CATS.find(c => c.id === catId);
+  items.push({ id: uid(), catId: cat.id, catLabel: cat.label, catIcon: cat.icon, title: text, note: '', done: false });
+  inlineOtherOpen.delete(catId);
+  delete inlineOtherText[catId];
+  save(); shareShown = false; render(); toast('Added');
+}
+
+// Top-level Other category
+function updateTopOther(val) { topOtherText = val; }
+
+function addTopOther() {
+  const text = topOtherText.trim();
+  if (!text) { toast('Name it first'); return; }
+  if (items.some(i => i.title === text)) { toast('Already on your list'); return; }
+  items.push({ id: uid(), catId: 'other', catLabel: 'Other', catIcon: '✏️', title: text, note: '', done: false });
+  topOtherText = '';
+  save(); shareShown = false; render(); toast('Added');
+}
+
+function removeItem(id) {
+  items = items.filter(i => i.id !== id);
+  save(); shareShown = false; render();
+}
+
+function toggleDone(id) {
+  if (mode === 'builder') {
+    const it = items.find(i => i.id === id);
+    if (!it) return;
+    it.done = !it.done;
+    save(); render();
+    toast(it.done ? 'Marked as received' : 'Marked as still needed');
+  } else {
+    const sid = String(id);
+    viewFulfilled.has(sid) ? viewFulfilled.delete(sid) : (viewFulfilled.add(sid), toast('Marked as gifted - thank you'));
+    saveViewer(); render();
+  }
+}
+
+function goToReview() {
+  if (!items.length) { toast('Add at least one item first'); return; }
+  myName = (qs('#b-name') || {}).value || myName;
+  save();
+  mode = 'review';
+  render();
+}
+
+function goToBuilder() {
+  mode = 'builder';
+  render();
+}
+
+function genShare() {
+  const data    = { name: myName, items, created: new Date().toISOString() };
+  const encoded = btoa(JSON.stringify(data));
+  const url     = location.origin + location.pathname + '?list=' + encoded;
+  mode = 'builder';
+  shareShown = true;
+  render();
+  qs('#share-url').textContent = url;
+  qs('#share-box').style.display = 'block';
+}
+
+function copyUrl() {
+  navigator.clipboard.writeText(qs('#share-url').textContent).then(() => toast('Link copied'));
+}
+
+function updateName() { myName = qs('#b-name').value; save(); }
+
+// ─── Render ────────────────────────────────────────────────────────────────
+function render() {
+  qs('#app').innerHTML =
+    mode === 'viewer' ? viewerHTML() :
+    mode === 'review' ? reviewHTML() :
+                        builderHTML();
+  if (mode === 'builder' && shareShown) {
+    qs('#share-box').style.display = 'block';
+  }
+}
+
+// ─── Builder ───────────────────────────────────────────────────────────────
+function builderHTML() {
+  const active = items.filter(i => !i.done);
+  const done   = items.filter(i =>  i.done);
+  const total  = items.length;
+  const pct    = total ? Math.round((done.length / total) * 100) : 0;
+
+  // Build preset groups for selected cats
+  let groupsHTML = '';
+  for (const catId of selectedCats) {
+    const cat = CATS.find(c => c.id === catId);
+    if (!cat) continue;
+
+    if (cat.id === 'other') {
+      // Top-level Other: open text field
+      groupsHTML += `
+        <div class="preset-group">
+          <div class="preset-group-label">${cat.icon} ${cat.label}</div>
+          <div class="top-other-form">
+            <input type="text" id="top-other-input"
+              value="${esc(topOtherText)}"
+              placeholder="Name what you need"
+              oninput="updateTopOther(this.value)"
+              onkeydown="if(event.key==='Enter')addTopOther()">
+            <div class="top-other-actions">
+              <button class="btn-top-add" onclick="addTopOther()">+ Add to list</button>
+            </div>
+          </div>
+        </div>`;
+    } else {
+      // Regular category with presets + inline Other
+      const isOtherOpen = inlineOtherOpen.has(cat.id);
+      groupsHTML += `
+        <div class="preset-group">
+          <div class="preset-group-label">${cat.icon} ${cat.label}</div>
+          <div class="preset-chips">
+            ${cat.presets.map(p => {
+              const used = items.some(i => i.title === p);
+              return `<button class="preset-chip${used?' used':''}" onclick="addPreset(${JSON.stringify(p)},'${cat.id}')">${used?'✓ ':''}${esc(p)}</button>`;
+            }).join('')}
+            <button class="preset-chip other-chip${isOtherOpen?' open':''}" onclick="toggleInlineOther('${cat.id}')">${isOtherOpen?'✕ Other':'+ Other'}</button>
+            ${isOtherOpen ? `
+              <div class="inline-other-wrap">
+                <input type="text"
+                  id="inline-other-${cat.id}"
+                  value="${esc(inlineOtherText[cat.id]||'')}"
+                  placeholder="Name it your way"
+                  oninput="updateInlineOther('${cat.id}',this.value)"
+                  onkeydown="if(event.key==='Enter')addInlineOther('${cat.id}')">
+                <button class="btn-inline-add" onclick="addInlineOther('${cat.id}')">Add</button>
+              </div>
+            ` : ''}
+          </div>
+        </div>`;
+    }
+  }
+
+  const btnLabel = !items.length && !shareShown
+    ? 'Add + generate shareable link'
+    : shareShown ? 'Update shareable link' : 'Review + generate shareable link';
+
+  return `
+    <div class="eyebrow">Appear Network</div>
+    <h1>Your appreciation list</h1>
+    <p class="subtitle">Tell people how they can show up for you.</p>
+
+    <div class="field">
+      <label>Your ID</label>
+      <input type="text" id="b-name" value="${esc(myName)}" placeholder="Your Appear Network ID" oninput="updateName()">
+    </div>
+
+    <hr>
+
+    <div class="eyebrow" style="margin-bottom:12px">How would you like to receive appreciation?</div>
+    <div class="cat-tabs">
+      ${CATS.map(c => `<button class="cat-tab${selectedCats.has(c.id)?' active':''}" onclick="toggleCat('${c.id}')">${c.icon} ${c.label}</button>`).join('')}
+    </div>
+
+    ${selectedCats.size > 0 ? `<div class="preset-groups">${groupsHTML}</div>` : ''}
+
+    <hr>
+
+    ${total > 0 ? `
+      <div class="eyebrow" style="margin-bottom:12px">Your list (${total} item${total!==1?'s':''})</div>
+      <div class="progress-wrap">
+        <div class="progress-labels"><span>${done.length} received</span><span>${active.length} still needed</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+      </div>
+      ${active.map(it => itemHTML(it,'builder')).join('')}
+      ${done.length ? `<div class="eyebrow" style="margin:20px 0 10px">Received</div>${done.map(it=>itemHTML(it,'builder')).join('')}` : ''}
+    ` : '<div class="empty">Nothing on your list yet - pick categories above to add items.</div>'}
+
+    <button class="btn-primary" onclick="goToReview()" style="margin-top:${total>0?'20':'8'}px">${btnLabel}</button>
+
+    <div class="share-box" id="share-box">
+      <p>Share this link with anyone who wants to show up for you:</p>
+      <div class="share-url" id="share-url"></div>
+      <button class="btn-primary" onclick="copyUrl()">Copy link</button>
+    </div>
+  `;
+}
+
+// ─── Review ────────────────────────────────────────────────────────────────
+function reviewHTML() {
+  const grouped = {};
+  for (const it of items) {
+    if (!grouped[it.catId]) grouped[it.catId] = { label: it.catLabel, icon: it.catIcon, items: [] };
+    grouped[it.catId].items.push(it);
+  }
+  const catCount = Object.keys(grouped).length;
+  const total    = items.length;
+
+  return `
+    <div class="eyebrow">Review your list</div>
+    <div class="review-header">
+      <div>
+        <h2>Looks good?</h2>
+        <p class="review-count">${total} item${total!==1?'s':''} across ${catCount} categor${catCount!==1?'ies':'y'}</p>
+      </div>
+      <button class="btn-edit" onclick="goToBuilder()">← Edit</button>
+    </div>
+
+    ${Object.values(grouped).map(group => `
+      <div class="review-group">
+        <div class="review-group-label">${group.icon} ${group.label}</div>
+        <div class="review-chips">
+          ${group.items.map(it => `
+            <div class="review-chip">${esc(it.title)}${it.note?`<span style="color:var(--muted);font-size:12px;margin-left:6px">· ${esc(it.note)}</span>`:''}</div>
+          `).join('')}
+        </div>
+      </div>
+    `).join('')}
+
+    <hr>
+    <button class="btn-primary" onclick="genShare()">Generate shareable link</button>
+    <button class="btn-secondary" onclick="goToBuilder()" style="margin-top:10px">← Go back and edit</button>
+  `;
+}
+
+// ─── Viewer ────────────────────────────────────────────────────────────────
+function viewerHTML() {
+  const vItems = viewerData.items || [];
+  const name   = viewerData.name  || 'Someone';
+  const active = vItems.filter(i => !viewFulfilled.has(String(i.id)));
+  const done   = vItems.filter(i =>  viewFulfilled.has(String(i.id)));
+  const pct    = vItems.length ? Math.round((done.length / vItems.length) * 100) : 0;
+
+  return `
+    <div class="eyebrow" style="text-align:center">Appear Network</div>
+    <h1 style="text-align:center;margin-bottom:6px">${esc(name)}'s appreciation list</h1>
+    <p class="subtitle" style="text-align:center">Ways to show up for ${esc(name)}.</p>
+
+    ${vItems.length ? `
+      <div class="progress-wrap">
+        <div class="progress-labels"><span>${done.length} gifted</span><span>${active.length} still open</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+      </div>
+    ` : ''}
+
+    ${active.length
+      ? `<div class="eyebrow" style="margin-bottom:12px">Still needed</div>${active.map(it=>itemHTML(it,'viewer')).join('')}`
+      : `<div class="empty">Everything has been gifted. ${esc(name)} is well supported right now.</div>`}
+
+    ${done.length ? `<div class="eyebrow" style="margin:24px 0 12px">Already gifted</div>${done.map(it=>itemHTML(it,'viewer')).join('')}` : ''}
+
+    <hr>
+    <p style="font-size:13px;color:var(--muted);text-align:center;margin-bottom:14px">Want to create your own list?</p>
+    <a href="${location.origin + location.pathname}" class="btn-outline">Create my list</a>
+  `;
+}
+
+// ─── Shared item row ───────────────────────────────────────────────────────
+function itemHTML(it, ctx) {
+  const isDone = ctx === 'builder' ? it.done : viewFulfilled.has(String(it.id));
+  const idRef  = JSON.stringify(it.id);
+  return `
+    <div class="wish-item${isDone?' done':''}">
+      <div class="wish-icon">${it.catIcon}</div>
+      <div class="wish-body">
+        <div class="wish-cat">${it.catLabel}</div>
+        <div class="wish-title">${esc(it.title)}</div>
+        ${it.note ? `<div class="wish-note">${esc(it.note)}</div>` : ''}
+        ${isDone ? `<div class="wish-badge">${ctx==='builder'?'Received':'Gifted'}</div>` : ''}
+      </div>
+      <div class="wish-actions">
+        ${isDone
+          ? `<button class="btn-sm undo" onclick="toggleDone(${idRef})">Undo</button>`
+          : `<button class="btn-sm receive" onclick="toggleDone(${idRef})">${ctx==='builder'?'Mark received':'I\'ll gift this'}</button>`}
+        ${ctx === 'builder' ? `<button class="btn-sm remove" onclick="removeItem(${idRef})">Remove</button>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+// ─── Helpers ───────────────────────────────────────────────────────────────
+function qs(sel)  { return document.querySelector(sel); }
+function uid()    { return Date.now() + '_' + Math.random().toString(36).slice(2); }
+function esc(s)   { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function toast(msg) {
+  const el = qs('#toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2400);
+}
+</script>
+
+<!-- v1.5 -->
+</body>
+</html>
